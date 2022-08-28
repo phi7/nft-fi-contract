@@ -20,12 +20,16 @@ contract Nftfi {
     // constructor() ERC721("SquareNFT", "SQUARE") {
     //     console.log("This is my NFT contract.");
     // }
-    address private nftMintAdrr = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
-    INftMint nftMint = INftMint(nftMintAdrr);
+    INftMint nftMint;
+
+    constructor(address _nftMintAdrr){
+        // address nftMintAdrr = _nftMintAdrr;
+        nftMint = INftMint(_nftMintAdrr);
+    }
 
     //担保に出されたNFTの情報
     struct CollateralizedNFTInfo {
-        //countIndexはリストの何番目にあるか
+        //countIndexはリストの何番目にあるかを示す
         uint256 countIndex;
         address collateralizer;
         address nftContractAddress;
@@ -68,6 +72,7 @@ contract Nftfi {
         // emit DebugLogEvent("Print Log!");
         // return collateralizedNFTs;
         // transferFrom();
+        console.log("caller %s",msg.sender);
         nftMint.transferFrom(msg.sender, address(this), _tokenId);
         console.log("collateralize!");
     }
@@ -86,6 +91,6 @@ contract Nftfi {
         require(collateralizedNFTs[countIndex].price < price);
         collateralizedNFTs[countIndex].invester = msg.sender;
         collateralizedNFTs[countIndex].price = price;
-        // trnasfer
+        
     }
 }

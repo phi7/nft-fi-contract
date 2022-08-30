@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: GPL-3.0
-
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -13,6 +12,14 @@ interface INftMint {
         address _to,
         uint256 tokenId
     ) external;
+
+    function safetransferFrom(
+        address _from,
+        address _to,
+        uint256 tokenId
+    ) external;
+
+
 }
 
 contract Nftfi {
@@ -22,9 +29,9 @@ contract Nftfi {
     // }
     INftMint nftMint;
 
-    constructor(address _nftMintAdrr){
+    constructor(){
         // address nftMintAdrr = _nftMintAdrr;
-        nftMint = INftMint(_nftMintAdrr);
+        nftMint = INftMint(0x842BDfd7da2d603b176f0E41B58a6f2D785aFBcA);
     }
 
     //担保に出されたNFTの情報
@@ -42,6 +49,9 @@ contract Nftfi {
 
     //担保に出されたNFTの情報の一覧
     CollateralizedNFTInfo[] collateralizedNFTs;
+    // uint counter = 0;
+    
+    // mapping(uint => CollateralizedNFTInfo)CollateralizeInfo;
 
     //担保者と担保に出されたNFTの情報の紐付け
     // mapping(address => uint256[]) collateralizerNFTList;
@@ -73,7 +83,14 @@ contract Nftfi {
         // return collateralizedNFTs;
         // transferFrom();
         console.log("caller %s",msg.sender);
-        nftMint.transferFrom(msg.sender, address(this), _tokenId);
+        // nftMint.transferFrom(msg.sender, address(this), _tokenId);
+        // nftMint.safetransferFrom(msg.sender, address(this), _tokenId);
+
+        // CollateralizeInfo[counter] = CollateralizedNFTInfo(
+
+        // );
+        // counter++;
+
         console.log("collateralize!");
     }
 
@@ -91,6 +108,5 @@ contract Nftfi {
         require(collateralizedNFTs[countIndex].price < price);
         collateralizedNFTs[countIndex].invester = msg.sender;
         collateralizedNFTs[countIndex].price = price;
-        
     }
 }

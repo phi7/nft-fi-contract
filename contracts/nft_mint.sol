@@ -156,7 +156,7 @@ contract NFTMint is ERC721URIStorage {
         // msg.sender を使って NFT を送信者に Mint します。
         _safeMint(msg.sender, newItemId);
         // approve(msg.sender, newItemId);
-        _isApprovedOrOwner(msg.sender, newItemId);
+        // _isApprovedOrOwner(msg.sender, newItemId);
 
         // tokenURIを更新します。
         _setTokenURI(newItemId, finalTokenUri);

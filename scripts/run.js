@@ -21,13 +21,16 @@ const main = async () => {
     const nftFiContract = await nftFiContractFactory.deploy(nftMintContract.address);
     const nftFi = await nftFiContract.deployed();
     console.log("NFTFi address: ", nftFi.address);
-
     //collateralizeする
     let collateralizeTxn = await nftFiContract.collateralize(nftMintContract.address,0);
     await collateralizeTxn.wait();
+    nftMintContract.approve(nftFiContract.address, 0);
+    console.log("approveしたぞい")
     // console.log(collateralizeTxn);
     let collateralizedNFTs = await nftFiContract.getCollateralizedNFTs();
-    console.log(collateralizedNFTs);
+  console.log(collateralizedNFTs);
+  
+  
 
     // let makeBidTxn = await nftFiContract.makeBid(0, 200);
     // await makeBidTxn.wait();

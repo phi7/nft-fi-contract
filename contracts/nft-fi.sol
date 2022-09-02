@@ -32,6 +32,11 @@ interface IGyen {
         uint256 _value
     ) external;
 
+    function transfer(
+        address _to,
+        uint256 _value
+    ) external;
+
     // function approve(address spender, uint256 amount) external;
 
     // function safetransferFrom(
@@ -81,6 +86,9 @@ contract Nftfi {
 
     //担保に出されたNFTの情報の一覧
     CollateralizedNFTInfo[] collateralizedNFTs;
+
+
+
     // uint counter = 0;
     
     // mapping(uint => CollateralizedNFTInfo)CollateralizeInfo;
@@ -113,7 +121,7 @@ contract Nftfi {
                 //isBidding
                 false,
                 //最初の最大の価格はinitialPriceと一致
-                100,
+                100 * (10 ** 18),
                 true
             );
         // collateralizerNFTList[msg.sender].push(newCollateralizedNFT);
@@ -148,6 +156,10 @@ contract Nftfi {
     //投資家がNFTを入札する関数
     function makeBid(uint256 countIndex, uint256 price) external payable {
         require(collateralizedNFTs[countIndex].biggestBidPrice < price);
+        // 前の入札者の金額を返す
+        if(collateralizedNFTs[countIndex].isBidding){
+            gyen.transfer(collateralizedNFTs[countIndex].invester, collateralizedNFTs[countIndex].biggestBidPrice);
+        }
         collateralizedNFTs[countIndex].invester = msg.sender;
         collateralizedNFTs[countIndex].biggestBidPrice = price;
         collateralizedNFTs[countIndex].isBidding = true;
@@ -162,7 +174,7 @@ contract Nftfi {
         require(collateralizedNFTs[countIndex].isBidding,"not yet bidding");
         //ローンの開始時間を記録
         collateralizedNFTs[countIndex].loanStartTime = block.timestamp;
-        gyen.transferFrom(address(this),collateralizedNFTs[countIndex].collateralizer,collateralizedNFTs[countIndex].biggestBidPrice);
+        gyen.transfer(collateralizedNFTs[countIndex].collateralizer,collateralizedNFTs[countIndex].biggestBidPrice);
     }
 
     //返済するための関数
@@ -179,7 +191,7 @@ contract Nftfi {
     //ローン期間がすぎたけど返済されなかったので清算する関数
     function liquidate(uint256 countIndex) external payable{
         //ローン期間がすぎたかをチェック
-        require(block.timestamp < collateralizedNFTs[countIndex].loanStartTime.add(collateralizedNFTs[countIndex].loanDuration),"yet loan continues..." );
+        require(block.timestamp > collateralizedNFTs[countIndex].loanStartTime.add(collateralizedNFTs[countIndex].loanDuration),"yet loan continues..." );
         nftMint.transferFrom(address(this), collateralizedNFTs[countIndex].invester, collateralizedNFTs[countIndex].tokenId);
     }
 
